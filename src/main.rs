@@ -26,15 +26,16 @@ fn main() -> std::io::Result<()> {
 		)
             })
     );
-    let config = rustls::ServerConfig::builder()
+    let config = rustls::ClientConfig::builder()
 	.with_safe_defaults()
-	.with_no_client_auth();
+	.with_root_certificates(root_store)
+	.with_no_client_auth();	
+    
+    let rc_config = std::sync::Arc::new(config);
     
     // address to connect to
     let address = &format!("192.168.1.239:{}", PORT);
-    let rc_config = rustls::server::ServerConfig::builder();
-	
-    let mut client = rustls::ServerConnection::new(config);
+    let mut client = rustls::ClientConnection::new(rc_config);
 
     // parse commandline args
     let args: Vec<String> = env::args().collect();
